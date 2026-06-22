@@ -3,15 +3,15 @@ A parameterized UART (Universal Asynchronous Receiver-Transmitter) IP core desig
 
 Key Highlights:
 
-FSM-based UART Transmitter (TX) and Receiver (RX)
-Configurable baud-rate generator (CLKS_PER_BAUD)
-Mid-bit oversampling for robust data sampling
-Loopback verification testbench
-Developed in Verilog HDL and verified with Icarus Verilog & GTKWave
+FSM-based UART Transmitter (TX) and Receiver (RX),
+Configurable baud-rate generator (CLKS_PER_BAUD),
+Mid-bit oversampling for robust data sampling,
+Loopback verification testbench,
+Developed in Verilog HDL and verified with Icarus Verilog & GTKWave.
 
 Learning Outcomes:
 
-UART protocol and asynchronous serial communication
-RTL design in Verilog
-Finite State Machine (FSM) implementation
-Timing analysis and waveform debugging using VCD files
+UART protocol and asynchronous serial communication,
+RTL design in Verilog,
+Finite State Machine (FSM) implementation,
+Timing analysis and waveform debugging using VCD files.
