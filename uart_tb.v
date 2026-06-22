@@ -34,12 +34,34 @@ module tb_uart;
     // Generate a 50MHz Clock
     always #10 clk = ~clk;
 
+    // --- REUSABLE TASK TO SEND AND RECEIVE A CHARACTER ---
+    task send_and_receive;
+        input [7:0] char_to_send;
+        begin
+            // 1. Wait until transmitter is completely idle
+            wait(o_busy == 1'b0);
+            
+            // 2. Load data and trigger transmission
+            i_data = char_to_send;
+            i_wr = 1;        
+            #20;             // Hold strobe for 1 clock cycle
+            i_wr = 0;        
+            
+            // 3. Wait for the Receiver to successfully catch it
+            wait(o_rx_valid == 1'b1);
+            $display("SUCCESS: Receiver caught data -> '%c' (0x%h)", o_rx_data, o_rx_data);
+            
+            // 4. Small buffer delay before the next transmission
+            #200; 
+        end
+    endtask
+
     initial begin
         // Tell Icarus Verilog to record signals for GTKWave
         $dumpfile("uart_tb.vcd");
         $dumpvars(0, tb_uart);
 
-        // 1. Initialize & Reset
+        // Initialize & Reset
         clk = 0;
         rst = 1;
         i_wr = 0;
@@ -49,20 +71,18 @@ module tb_uart;
         rst = 0; // Release reset
         #20;
 
-        // 2. Start Transmission
-        $display("TEST: Sending character 'A' (0x41) into Transmitter...");
-        i_data = 8'h41;  // Hex for 'A'
-        i_wr = 1;        // Trigger write strobe
-        #20;
-        i_wr = 0;        // Release write strobe
-
-        // 3. Wait for the Receiver to catch it
-        wait(o_rx_valid == 1'b1);
-        $display("SUCCESS: Receiver caught data -> '%c' (0x%h)", o_rx_data, o_rx_data);
+        $display("TEST: Sending word 'HELLO' into Transmitter...\n");
+        
+        // Transmit "HELLO" using ASCII Hex codes
+        send_and_receive(8'h48); // 'H'
+        send_and_receive(8'h45); // 'E'
+        send_and_receive(8'h4C); // 'L'
+        send_and_receive(8'h4C); // 'L'
+        send_and_receive(8'h4F); // 'O'
 
         // Give it a little buffer time, then finish
-        #100;
-        $display("Simulation complete. Open 'waveform.vcd' in GTKWave.");
+        #500;
+        $display("\nSimulation complete. Open 'waveform.vcd' in GTKWave.");
         $finish;
     end
     
